@@ -9,7 +9,27 @@ class PostsController < ApplicationController
         @post= Post.new
     end
 
+    
     def create
-        
+        @post = Post.new(post_params)
+        if @post.content.include?("spoiler")
+            content = @post.content.split(" ")
+            content.delete("spoiler")
+            content = content.join(" ")
+            @post.content = content
+        end
+        if @post.save
+            redirect_to root_path, notice: 'Se ha creado el post'
+        else
+            redirect_to posts_dashboard_path, alert: 'No se pudo crear el post, es necesario tener todos los campos con contenido'
+        end
+
     end
+   
+
+    private
+
+    def post_params
+        params.require(:post).permit(:title, :content, :image_url)
+      end
 end
